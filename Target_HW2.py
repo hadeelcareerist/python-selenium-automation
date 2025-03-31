@@ -11,28 +11,22 @@ driver_path = ChromeDriverManager().install()
 service = Service(driver_path)
 driver = webdriver.Chrome(service=service)
 driver.maximize_window()
-driver.implicitly_wait(5)
 
 # open the url
 driver.get('https://www.target.com/')
-# search
-driver.find_element(By.ID, 'search').send_keys('tea')
-driver.find_element(By.XPATH, "//button[@data-test='@web/Search/SearchButton']").click()
-
-sleep(10)
 
 
+sleep(3)
 
-#veriication
-expected_result = 'tea'
-actual_result = driver.find_element(By.XPATH, '//div[@data-test="lp-resultsCount"]').text
-assert expected_result in actual_result, f"Expected text {expected_result} not in actual {actual_result}"
-print('Test case passed')
-driver.quit()
+#click the sign in button
+driver.find_element(By.XPATH, "//a[@data-test='@web/AccountLink']").click()
 
+#Click Sign In from the side navigation
+driver.find_element(By.XPATH, "//button[@data-test='accountNav-signIn']").click()
 
+sleep(5)
 
-
-
-
-
+#verification
+expected = 'Sign into your Target account'
+actual = driver.find_element(By.XPATH, "//h1[contains(@class, 'styles_ndsHeading')]").text
+assert expected == actual, f"Expected {expected} did not match {actual}"
