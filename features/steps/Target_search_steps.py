@@ -1,11 +1,19 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from behave import given, when, then
 from time import sleep
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from behave import given, when, then
 
-@given('Open target main page')
+WAIT_TIME = 10
+
+@given('Open Target main page')
 def open_target_main(context):
     context.driver.get('https://www.target.com/')
-    sleep(2)
+    WebDriverWait(context.driver, 10).until(EC.presence_of_element_located(By.ID, 'search'))
 
 @when('Search for tea')
 def search_product(context):
@@ -42,8 +50,3 @@ def verify_search_results(context):
     expected_text = 'tea'
     assert expected_text in actual_text, f'Error. Text {expected_text} not in {actual_text}'
 
-    @then('verify "Your cart is empty" message is shown')
-    def verify_empty_cart_message(context):
-        actual_result = context.driver.find_element(By.XPATH, "//h1[contains(text(),'Your cart is empty')]").text
-        expected_result = "Your cart is empty"
-        assert expected_result in actual_result, f"Error. Text '{expected_result}' not found in '{actual_result}'"

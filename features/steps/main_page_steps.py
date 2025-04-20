@@ -1,17 +1,17 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from behave import given, when, then
 from time import sleep
 
 
 SEARCH_FIELD = (By.ID, 'search')
 SEARCH_BTN = (By.XPATH, "//button[@data-test='@web/Search/SearchButton']")
-CART_ICON = (By.CSS_SELECTOR, "[data-test='@web/CartLink']")
-HEADER_LINKS = (By.CSS_SELECTOR, "[id*='utilityNav']")
-FIRST_PRODUCT = (By.CSS_SELECTOR, 'div[title*="Wired On-Ear Headphones"]')
-CART_ITEM_TITLE = (By.CSS_SELECTOR, "[data-test='cartItem-title']")
-ADD_TO_CART_BTN = (By.XPATH, "//button[contains(text(),'Add to cart')]")
-VIEW_CART_BTN = (By.XPATH, "//a[contains(@href,'/cart')]")
-CART_ITEM_TITLE = (By.CSS_SELECTOR, "[data-test='cartItem-title']")
+SEARCH_RESULTS_TEXT= (By.XPATH, "//div[@data-test= 'lp-resultsCount']")
+ADD_TO_CART_BTN = (By.CSS_SELECTOR, "[id*= 'addToCartButton']")
+SIDE_NAV_PRODUCT_NAME = (By.CSS_SELECTOR, "[data-test= 'content-wrapper']h4")
+SIDE_NAV_ADD_TO_CART_BTN = (By.CSS_SELECTOR, "[data-test= 'content-wrapper'] [id*= 'addToCart']")
+
+
 
 @given('Open target main page')
 def open_target_main(context):
@@ -26,49 +26,27 @@ def search_product(context, search_word):
     sleep(6)
 
 
-@when('Click on Cart icon')
+@when('Click on add to Cart button')
 def click_cart(context):
-    context.driver.find_element(*CART_ICON).click()
-
-@when("Click on first product")
-def open_first_product(context):
-        context.driver.find_element(*FIRST_PRODUCT).click()
-        sleep(4)
-@when("Add product to cart")
-def add_product_to_cart(context):
     context.driver.find_element(*ADD_TO_CART_BTN).click()
-    sleep(3)
+
+@when('store product name')
+def store_product_name(context):
+    context.product_name = context.driver.find_element(*SIDE_NAV_PRODUCT_NAME).text
+    print('product name stored:', context.product_name)
+
+@when("Confirm Add to Cart button from side navigation")
+def side_nav_click_add_to_cart(context):
+        context.driver.find_element(*SIDE_NAV_ADD_TO_CART_BTN).click()
+        sleep(5)
 
 
-@when("Click on view cart")
-def click_on_view_cart(context):
-    context.driver.find_element(*VIEW_CART_BTN).click()
-    sleep(4)
 
-@then('Verify at least 1 link shown')
-def verify_1_header_link_shown(context):
-    link = context.driver.find_element(*HEADER_LINKS)
-    print(link)
+@then('Verify correct search result shown for {expected_result}')
+def verify_search_results(context, expected_result):
+ actual_text = context.driver.find_element(*SEARCH_RESULTS_TEXT).text
+ assert expected_result in actual_text, f'Error. Text{expected_result} not in {actual_text}'
 
 
-@then('Verify {link_amount} links shown')
-def verify_all_header_links_shown(context, link_amount):
-    link_amount = int(link_amount) # "6" => int 6
-    links = context.driver.find_elements(*HEADER_LINKS)
-    print(links)
-    assert len(links) == link_amount, f'Expected {link_amount} links, but got {len(links)}'
 
-@then("Verify product is in the cart")
-def verify_product_in_cart(context):
-    sleep(3)
-    cart_items = context.driver.find_elements(*CART_ITEM_TITLE)
-    print(cart_items)
-    assert any("heyday" in item.text.lower() for item in cart_items), \
-        " Expected product not found in the cart."
 
-@then("Verify product appears in cart")
-def verify_product_in_cart(context):
-    cart_items = context.driver.find_elements(*CART_ITEM_TITLE)
-    assert any("heyday" in item.text.lower() for item in cart_items), \
-        " Expected product not found in cart."
-    print(" Product successfully found in cart.")
