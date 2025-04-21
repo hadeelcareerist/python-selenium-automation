@@ -15,15 +15,18 @@ SIDE_NAV_ADD_TO_CART_BTN = (By.CSS_SELECTOR, "[data-test= 'content-wrapper'] [id
 
 @given('Open target main page')
 def open_target_main(context):
-    context.driver.get('https://www.target.com/')
-    sleep(10)
+    #context.driver.get('https://www.target.com/') do instead
+    context.app.main_page.open_main_page()
+    context.driver.wait.until(EC.element_to_be_clickable(SEARCH_FIELD), message='Search field is not clickable')
 
 
 @when('Search for {search_word}')
 def search_product(context, search_word):
-    context.driver.find_element(*SEARCH_FIELD).send_keys(search_word)
-    context.driver.find_element(*SEARCH_BTN).click()
-    sleep(6)
+    #context.driver.find_element(*SEARCH_FIELD).send_keys(search_word)
+    #context.driver.find_element(*SEARCH_BTN).click()
+    #search happens in the header
+    context.app.header.search()
+    sleep(8)
 
 
 @when('Click on add to Cart button')

@@ -44,7 +44,7 @@ def verify_sign_in_form(context):
     expected_text = "Sign into your Target account"
 
     assert expected_text == actual_text, f"Error: Expected '{expected_text}', but found '{actual_text}'"
-@then('Verify correct search results show')
+@then('Verify correct search results shown for tea')
 def verify_search_results(context):
     actual_text = context.driver.find_element(By.XPATH, "//div[@data-test='lp-resultsCount']").text
     expected_text = 'tea'
